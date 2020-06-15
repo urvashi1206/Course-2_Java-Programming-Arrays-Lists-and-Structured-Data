@@ -150,22 +150,31 @@ public class LogAnalyzer
      public ArrayList<String> iPsWithMostVisitsOnDay(HashMap<String, ArrayList<String>> dates, String date)
      {
          ArrayList<String> ips = new ArrayList<String>();
-         ArrayList<String> iplist = new ArrayList<String>();
-         for(String w: dates.keySet()){
-             if(w.equals(date)){
-                 ips=dates.get(w);
+         int max=0;
+         HashMap<String,Integer> maxOccur = new HashMap<String,Integer>();
+         for(LogEntry le : records){
+             String newDate = le.getAccessTime().toString().substring(4,10);
+             if(newDate.equals(date)){
+                 String ip = le.getIpAddress();
+                 if(!maxOccur.containsKey(ip))
+                 {
+                     maxOccur.put(ip,1);
+                 }
+                 else{
+                      maxOccur.put(ip,maxOccur.get(ip)+1);
+                 }
              }
          }
-         int count=0;
-         for(String s: ips){
-            if(!iplist.contains(s)){
-                count++;
-                if(count>1){
-                    iplist.add(s);
-                    count=0;
-                }
-            }
+         for(String w: maxOccur.keySet()){
+             if(max<maxOccur.get(w)){
+                 max=maxOccur.get(w);
+             }
          }
-         return iplist;
+         for(String w: maxOccur.keySet()){
+             if(maxOccur.get(w)==max){
+                 ips.add(w);
+             }
+         }
+         return ips;
      }
 }
